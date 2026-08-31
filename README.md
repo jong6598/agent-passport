@@ -8,8 +8,9 @@ A public, verifiable contribution passport for persistent `did:key` identities.
 - **Local verification:** verify Ed25519 signatures and payload hashes in the browser.
 - **Key Vault:** create an Ed25519 DID locally, export an Argon2id + AES-256-GCM encrypted recovery file, and complete a mandatory restore challenge.
 - **Contribution Studio:** review canonical JSON and SHA-256, sign locally, independently verify the signature, and download a portable signed record.
-- **Approval-gated registration:** verify one signed contribution, review and sign the exact public profile, download a portable registration request, and hand it to a public GitHub application for maintainer review.
-- **Publication boundary:** signing never posts or registers anything automatically. External publication requires a separate explicit action.
+- **Automatic self-registration:** after recovery verification, sign a short-lived server challenge and an exact public profile, complete Turnstile on a separate page, and publish immediately as `SELF-REGISTERED · UNVERIFIED`.
+- **Verified-status review:** submit one signed contribution plus a signed public profile through the GitHub Registration Desk for separate maintainer review.
+- **Publication boundary:** key creation and signing do not publish by themselves. `Create & publish Passport` is the explicit public action; a valid self-registration does not grant `VERIFIED` status.
 
 ## Trust limits
 
@@ -29,8 +30,10 @@ Open:
 
 - `http://127.0.0.1:8765/` — public Passport lookup
 - `http://127.0.0.1:8765/vault.html` — Key Vault
+- `http://127.0.0.1:8765/publish.html` — sign a self-registration request locally
+- `http://127.0.0.1:8765/activate.html` — separate Turnstile submission page
 - `http://127.0.0.1:8765/studio.html` — Contribution Studio
-- `http://127.0.0.1:8765/submit.html` — approval-gated Registration Desk
+- `http://127.0.0.1:8765/submit.html` — approval-gated VERIFIED-status desk
 
 Optional browser smoke tests use Google Chrome. On non-macOS systems, set `CHROME_EXECUTABLE_PATH` to the browser binary:
 
@@ -40,11 +43,12 @@ npm run test:browser
 npm run test:passport
 npm run test:studio
 npm run test:submit
+npm run test:publish
 ```
 
-## Registration review
+## VERIFIED-status review
 
-Registration Desk produces an `agent-passport-signed-registration-v1` request containing a signed public profile and one independently verified signed contribution. The applicant downloads and pastes that request into the repository's public Passport registration issue form. This is an application, not publication: a maintainer must validate it before changing `data/index.json` or adding a public manifest.
+Self-registration does not need maintainer approval and is always labeled `SELF-REGISTERED · UNVERIFIED`. The Registration Desk is the separate route for requesting a reviewed `VERIFIED` status. It produces an `agent-passport-signed-registration-v1` request containing a signed public profile and one independently verified signed contribution. The applicant downloads and pastes that request into the repository's public issue form. A maintainer must validate the claim before changing a curated manifest or status.
 
 Maintainers can perform the cryptographic intake check locally:
 
@@ -68,9 +72,24 @@ The encrypted recovery file contains public metadata plus encrypted PKCS#8 bytes
 
 ## Public registry
 
-`data/index.json` is a curated discovery index. A DID is viewable only when its entry points to a same-origin manifest under `data/passports/` and the manifest DID exactly matches the index DID.
+Public lookup checks two clearly separated sources:
 
-Adding a public Passport is a publication action. Review the manifest for sensitive information and obtain the DID holder's approval before opening a pull request.
+- `data/index.json` and same-origin manifests under `data/passports/` for curated/maintainer-reviewed records;
+- the Cloudflare Worker + D1 API for signed self-registrations labeled `SELF-REGISTERED · UNVERIFIED`.
+
+The Worker verifies the Ed25519 signature, canonical JSON, SHA-256, short-lived nonce, same-network challenge, Turnstile token, exact allowed origin, one-Passport-per-DID rule, three registrations per daily IP hash, and a global daily cap of 100. Raw IP addresses are not stored. The D1 record contains only the public profile, signed registration, status, and timestamps.
+
+A valid signature proves control of the DID key over the registration bytes. It does not make the public profile or linked work true. Curated `VERIFIED` status remains a separate human review action.
+
+## Cloudflare operation and cost boundary
+
+Production uses Workers Free, D1 Free, and Turnstile Free. `wrangler.toml` binds the public configuration; `IP_HASH_SECRET` and `TURNSTILE_SECRET` are Cloudflare Worker secrets and must never be committed. The Free plan fails closed at its quota rather than enabling paid overages. Current configured application caps are much smaller than Cloudflare's free quotas: 10 challenges and 3 registrations per daily IP hash, plus 100 registrations globally per day.
+
+Official pricing references:
+
+- <https://developers.cloudflare.com/workers/platform/pricing/>
+- <https://developers.cloudflare.com/d1/platform/pricing/>
+- <https://developers.cloudflare.com/turnstile/plans/>
 
 ## Build and release
 

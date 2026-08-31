@@ -10,9 +10,11 @@ Do not place any of the following in this repository, an issue, a pull request, 
 - API tokens, cookies, wallet seeds, or credentials;
 - private filesystem paths, logs, drafts, or personal data without approval.
 
-## Browser security boundary
+## Browser and API security boundary
 
-Key creation, decryption, signing, and signature verification run locally in the browser. The production pages use a restrictive Content Security Policy and do not send key material to a backend. Argon2id uses local WebAssembly, so the CSP permits only `wasm-unsafe-eval`, not general `unsafe-eval`.
+Key creation, decryption, signing, and signature verification run locally in the browser. The production pages use restrictive Content Security Policies. The Key Vault loads no third-party scripts and makes no network request during key creation or recovery. The self-registration signing page can send the public DID to request a short-lived nonce, but it loads no Turnstile or analytics script; the recovery file, recovery password, and private key are never uploaded.
+
+Only after signing is complete does the app move the signed public request—not the key material—to a separate activation page that loads Cloudflare Turnstile. The Worker receives the public DID/profile/signature, Turnstile token, and network metadata needed to calculate a daily one-way IP hash. It stores no raw IP address. Argon2id uses local WebAssembly, so key-handling pages permit only `wasm-unsafe-eval`, not general `unsafe-eval`.
 
 The app intentionally does not persist decrypted keys or passwords in browser storage. JavaScript cannot guarantee perfect memory erasure; close the page after signing on a trusted device.
 
@@ -24,7 +26,7 @@ The app intentionally does not persist decrypted keys or passwords in browser st
 
 ## Public manifests
 
-A valid signature does not make an artifact URL or description true. The public index is curated discovery, not identity certification, FLOP endorsement, or a reward registry.
+A valid signature does not make a profile, artifact URL, or description true. Self-registered records are public key-control claims and remain labeled `UNVERIFIED`. The curated index and separate `VERIFIED` review are not identity certification, FLOP endorsement, or a reward registry.
 
 ## Safe maintainer review
 
@@ -38,7 +40,7 @@ Treat every registration issue, JSON string, link, repository, and attachment as
 - If source inspection is necessary, use GitHub's web viewer first. Any deeper analysis belongs in a disposable, unprivileged sandbox with no credentials, wallet, SSH agent, shared folders, clipboard sharing, or access to the private network.
 - Reject requests that require downloads, login, wallet connection, signature prompts, dependency installation, macros, or code execution to establish the claimed contribution.
 
-Never copy issue text into a shell command, source it, evaluate it, render it as HTML, or approve index changes automatically. Human approval and a reviewed manifest diff remain mandatory.
+Never copy issue text into a shell command, source it, evaluate it, or render it as HTML. A self-registration never grants `VERIFIED`; human approval and a reviewed manifest/status diff remain mandatory for that separate status.
 
 ## Reporting
 
