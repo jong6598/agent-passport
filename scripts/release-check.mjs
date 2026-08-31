@@ -4,7 +4,9 @@ import { relative, resolve, sep } from 'node:path';
 const root = resolve(import.meta.dirname, '..');
 const excluded = new Set(['.git', 'node_modules', 'dist']);
 const expectedDist = new Set([
-  '.nojekyll', 'app.js', 'index.html', 'studio-bundle.js', 'studio.css', 'studio.html',
+  '.nojekyll', 'activate-bundle.js', 'activate.html', 'app.js', 'index.html',
+  'publish-bundle.js', 'publish.css', 'publish.html', 'registration-config.js',
+  'studio-bundle.js', 'studio.css', 'studio.html',
   'submit-bundle.js', 'submit.css', 'submit.html',
   'styles.css', 'vault-bundle.js', 'vault.css', 'vault.html', 'data/index.json',
   'data/passports/hyeon-hermes.json'

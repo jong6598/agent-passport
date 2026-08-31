@@ -1,5 +1,6 @@
 const state = { index: null, manifest: null, verification: 'idle', sound: true };
 const $ = (id) => document.getElementById(id);
+const apiBase = globalThis.AGENT_PASSPORT_CONFIG?.apiBase || '';
 
 const base58Alphabet = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz';
 
@@ -85,6 +86,18 @@ async function verifyContribution(contribution, did) {
   return verifiedSignatures ? { ok: true, verifiedSignatures } : { ok: false, skipped: true };
 }
 
+async function verifySelfRegistration(registration, did) {
+  if (!registration || registration.schema !== 'agent-passport-signed-self-registration-v1') return { ok: false };
+  if (registration.payload?.did !== did || registration.signature?.did !== did || registration.signature?.algorithm !== 'Ed25519') return { ok: false };
+  const canonical = canonicalJson(registration.payload);
+  if (canonical !== registration.canonicalJson) return { ok: false };
+  const bytes = new TextEncoder().encode(canonical);
+  if (await sha256Hex(bytes) !== registration.payloadSha256) return { ok: false };
+  const key = await crypto.subtle.importKey('raw', publicKeyFromDid(did), { name: 'Ed25519' }, false, ['verify']);
+  const ok = await crypto.subtle.verify({ name: 'Ed25519' }, key, base64UrlDecode(registration.signature.value), bytes);
+  return { ok, verifiedSignatures: ok ? 1 : 0 };
+}
+
 function formatDate(value) {
   if (value === 'NEXT') return value;
   return new Intl.DateTimeFormat('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })
@@ -163,7 +176,15 @@ function render(manifest) {
   $('disclaimer').textContent = manifest.disclaimer;
   $('mrz-2').textContent = `${p.passportNumber.replaceAll('-', '')}${p.operatorRegion.slice(0, 2)}${p.issuedOn.replaceAll('-', '').slice(2)}${p.validUntil}<<<<<<`;
   const list = $('contribution-list');
-  list.replaceChildren(...manifest.contributions.map(renderContribution));
+  if (manifest.contributions.length) {
+    list.replaceChildren(...manifest.contributions.map(renderContribution));
+  } else {
+    const empty = element('article', 'visa draft');
+    const main = element('div', 'visa-main');
+    main.append(element('div', 'meta', 'NO CONTRIBUTIONS YET'), element('h3', '', 'Passport created'), element('p', '', 'This DID has a signed self-registration but no published work history yet.'));
+    empty.append(element('div', 'visa-code', '—'), main, element('div', 'visa-state', 'UNVERIFIED'));
+    list.replaceChildren(empty);
+  }
 }
 
 function toast(message) {
@@ -181,14 +202,22 @@ async function verifyPassport({ silent = false } = {}) {
   lamp.className = 'verification-lamp';
   try {
     const signed = state.manifest.contributions.filter(x => x.signature || x.artifactAttestation?.signature);
-    if (!signed.length) throw new Error('No signed contributions');
-    const results = await Promise.all(signed.map(x => verifyContribution(x, state.manifest.profile.did)));
+    let results;
+    let selfRegistration = false;
+    if (signed.length) {
+      results = await Promise.all(signed.map(x => verifyContribution(x, state.manifest.profile.did)));
+    } else if (state.manifest.signedRegistration) {
+      selfRegistration = true;
+      results = [await verifySelfRegistration(state.manifest.signedRegistration, state.manifest.profile.did)];
+    } else {
+      throw new Error('No signed records');
+    }
     const pass = results.every(x => x.ok);
     const signatureCount = results.reduce((sum, result) => sum + (result.verifiedSignatures || 0), 0);
     state.verification = pass ? 'pass' : 'fail';
     lamp.classList.add(pass ? 'pass' : 'fail');
-    label.textContent = pass ? `${signatureCount} SIGNATURES VERIFIED` : 'VERIFICATION FAILED';
-    if (!silent) toast(pass ? 'Ed25519 signature and payload hash verified locally.' : 'The signed record did not verify.');
+    label.textContent = pass ? (selfRegistration ? 'KEY CONTROL VERIFIED · UNVERIFIED PROFILE' : `${signatureCount} SIGNATURES VERIFIED`) : 'VERIFICATION FAILED';
+    if (!silent) toast(pass ? (selfRegistration ? 'DID key control verified. Profile claims remain unverified.' : 'Ed25519 signature and payload hash verified locally.') : 'The signed record did not verify.');
   } catch (error) {
     state.verification = 'fail';
     lamp.classList.add('fail');
@@ -216,25 +245,48 @@ async function loadPassport(did, { updateUrl = false } = {}) {
   const status = $('search-status');
   status.classList.remove('error');
   const entry = state.index.passports.find(item => item.did === normalized && item.status === 'active');
-  if (!entry) {
-    state.manifest = null;
-    $('passport').hidden = true;
-    status.textContent = 'No registered public Passport was found for this exact DID.';
-    status.classList.add('error');
-    return false;
+  let manifest;
+  let displayName;
+  let sourceLabel;
+  if (entry) {
+    if (!validManifestPath(entry.manifest)) throw new Error('Unsafe manifest path in public index');
+    const response = await fetch(entry.manifest, { cache: 'no-store' });
+    if (!response.ok) throw new Error(`Manifest HTTP ${response.status}`);
+    manifest = await response.json();
+    if (manifest.profile?.did !== entry.did) throw new Error('Index DID does not match manifest DID');
+    displayName = entry.displayName;
+    sourceLabel = 'Registered Passport';
+  } else {
+    let validDid = true;
+    try { publicKeyFromDid(normalized); } catch { validDid = false; }
+    if (!apiBase || !validDid) {
+      state.manifest = null;
+      $('passport').hidden = true;
+      status.textContent = 'No registered public Passport was found for this exact DID.';
+      status.classList.add('error');
+      return false;
+    }
+    const response = await fetch(`${apiBase}/v1/passports?did=${encodeURIComponent(normalized)}`, { cache: 'no-store', referrerPolicy: 'no-referrer' });
+    if (response.status === 404) {
+      state.manifest = null;
+      $('passport').hidden = true;
+      status.textContent = 'No registered public Passport was found for this exact DID.';
+      status.classList.add('error');
+      return false;
+    }
+    const body = await response.json();
+    if (!response.ok || !body.ok || body.passport?.profile?.did !== normalized) throw new Error(body.error || `Self-registration API HTTP ${response.status}`);
+    manifest = body.passport;
+    displayName = manifest.profile.displayName;
+    sourceLabel = 'Self-registered · unverified Passport';
   }
-  if (!validManifestPath(entry.manifest)) throw new Error('Unsafe manifest path in public index');
-  const response = await fetch(entry.manifest, { cache: 'no-store' });
-  if (!response.ok) throw new Error(`Manifest HTTP ${response.status}`);
-  const manifest = await response.json();
-  if (manifest.profile?.did !== entry.did) throw new Error('Index DID does not match manifest DID');
   state.manifest = manifest;
   render(manifest);
   $('passport').hidden = false;
-  $('did-search-input').value = entry.did;
-  status.textContent = `Registered Passport found for ${entry.displayName}. Viewing requires no private key.`;
-  document.title = `Agent Passport · ${entry.displayName}`;
-  if (updateUrl) history.pushState({ did: entry.did }, '', `?did=${encodeURIComponent(entry.did)}`);
+  $('did-search-input').value = normalized;
+  status.textContent = `${sourceLabel} found for ${displayName}. Viewing requires no private key.`;
+  document.title = `Agent Passport · ${displayName}`;
+  if (updateUrl) history.pushState({ did: normalized }, '', `?did=${encodeURIComponent(normalized)}`);
   await verifyPassport({ silent: true });
   return true;
 }

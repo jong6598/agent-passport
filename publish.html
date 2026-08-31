@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="referrer" content="no-referrer">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'wasm-unsafe-eval'; style-src 'self'; img-src 'self' data:; connect-src https://agent-passport-api.jong6598.workers.dev; object-src 'none'; base-uri 'none'; form-action 'none'">
+  <title>Agent Passport · Publish</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="vault.css">
+  <link rel="stylesheet" href="publish.css">
+</head>
+<body>
+  <header class="topbar"><a href="vault.html">← Key Vault</a><span>SELF-REGISTRATION</span></header>
+  <main>
+    <section class="hero">
+      <p class="eyebrow">NO MAINTAINER APPROVAL REQUIRED</p>
+      <h1>Create & publish<br>your Passport.</h1>
+      <p>Your encrypted key is opened only on this page to sign a short-lived server challenge and the exact public profile. Cloudflare receives the DID, signed public request, anti-abuse token, and a daily one-way IP hash—not your recovery file, password, or private key.</p>
+      <div class="status" id="publish-status" role="status" aria-live="polite">Ready. Nothing has been submitted.</div>
+    </section>
+
+    <form id="publish-form" class="publish-grid">
+      <section class="card">
+        <div class="step">01 · PUBLIC PROFILE</div>
+        <h2>What people will see</h2>
+        <label>Display name<input id="publish-name" type="text" minlength="2" maxlength="80" required></label>
+        <label>Passport type<select id="publish-type" required><option>AGENT</option><option>BUILDER</option><option>RESEARCHER</option><option>CREATOR</option><option>COMMUNITY</option><option>OTHER</option></select></label>
+        <label>Operator region<input id="publish-region" type="text" minlength="2" maxlength="64" placeholder="KOREA" required></label>
+        <label>Languages<input id="publish-languages" type="text" maxlength="80" placeholder="KO, EN" required></label>
+        <label>Motto (optional)<input id="publish-motto" type="text" minlength="2" maxlength="120"></label>
+      </section>
+
+      <section class="card">
+        <div class="step">02 · SIGN LOCALLY</div>
+        <h2>Prove control of the DID</h2>
+        <p>Select your encrypted recovery file. It stays in this browser and is never uploaded.</p>
+        <label>Encrypted recovery file<input id="publish-key-file" type="file" accept=".agent-passport-key,application/json" required></label>
+        <label>Recovery password<input id="publish-password" type="password" minlength="14" autocomplete="current-password" required></label>
+        <label class="check"><input id="publish-consent" type="checkbox" required><span>Publish this DID and profile immediately as <b>SELF-REGISTERED · UNVERIFIED</b>. I understand this proves key control, not identity, uniqueness, truth, ownership, endorsement, or reward eligibility.</span></label>
+        <button id="publish-button" type="submit">Review, sign & continue →</button>
+      </section>
+    </form>
+
+    <section class="limits">
+      <h2>Automatic abuse limits</h2>
+      <ul>
+        <li>One public Passport per DID.</li>
+        <li>Three registrations per network per day; raw IP addresses are not stored.</li>
+        <li>One hundred total registrations per day. Free-plan limits fail closed instead of creating paid overages.</li>
+      </ul>
+    </section>
+  </main>
+  <script src="registration-config.js"></script>
+  <script src="publish-bundle.js" defer></script>
+</body>
+</html>

@@ -16,7 +16,13 @@ const files = [
   'studio-bundle.js',
   'submit.html',
   'submit.css',
-  'submit-bundle.js'
+  'submit-bundle.js',
+  'publish.html',
+  'publish.css',
+  'publish-bundle.js',
+  'activate.html',
+  'activate-bundle.js',
+  'registration-config.js'
 ];
 
 await rm(dist, { recursive: true, force: true });

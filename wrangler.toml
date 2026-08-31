@@ -1,0 +1,18 @@
+name = "agent-passport-api"
+main = "worker.js"
+compatibility_date = "2026-08-31"
+workers_dev = true
+
+[vars]
+ALLOWED_ORIGIN = "https://jong6598.github.io"
+ENVIRONMENT = "production"
+IP_CHALLENGES_PER_DAY = "10"
+IP_REGISTRATIONS_PER_DAY = "3"
+GLOBAL_REGISTRATIONS_PER_DAY = "100"
+REQUIRE_TURNSTILE = "true"
+TURNSTILE_HOSTNAME = "jong6598.github.io"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "agent-passport"
+database_id = "92f644b2-63fe-438c-8dc0-eaaaad9cfeda"

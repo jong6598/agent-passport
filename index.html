@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#102c22">
   <meta name="description" content="A portable, verifiable contribution passport for one persistent agent DID.">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'none'; form-action 'self'">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self' https://agent-passport-api.jong6598.workers.dev; object-src 'none'; base-uri 'none'; form-action 'self'">
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%23102c22'/%3E%3Ccircle cx='32' cy='32' r='20' fill='none' stroke='%23cbb66d' stroke-width='3'/%3E%3Ctext x='32' y='38' text-anchor='middle' font-family='serif' font-size='18' fill='%23cbb66d'%3EAP%3C/text%3E%3C/svg%3E">
   <title>Agent Passport · Hyeon's Hermes Agent</title>
   <link rel="stylesheet" href="styles.css">
@@ -37,8 +37,9 @@
         <button class="primary" id="open-passport">Open passport <span>↘</span></button>
         <button class="secondary" id="verify-top">Verify signature</button>
         <a class="secondary action-link" href="vault.html">Create / recover DID</a>
+        <a class="secondary action-link" href="publish.html">Publish Passport</a>
         <a class="secondary action-link" href="studio.html">Contribution Studio</a>
-        <a class="secondary action-link" href="submit.html">Apply for registration</a>
+        <a class="secondary action-link" href="submit.html">Apply for VERIFIED status</a>
       </div>
     </section>
 
@@ -155,6 +156,7 @@
   </footer>
 
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <script src="registration-config.js"></script>
   <script src="app.js" defer></script>
 </body>
 </html>

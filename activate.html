@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="referrer" content="no-referrer">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://challenges.cloudflare.com; style-src 'self'; img-src 'self' data:; frame-src https://challenges.cloudflare.com; connect-src https://agent-passport-api.jong6598.workers.dev https://challenges.cloudflare.com; object-src 'none'; base-uri 'none'; form-action 'none'">
+  <title>Agent Passport · Activate</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="vault.css">
+  <link rel="stylesheet" href="publish.css">
+</head>
+<body>
+  <header class="topbar"><a href="publish.html">← Publish Passport</a><span>ANTI-ABUSE GATE</span></header>
+  <main>
+    <section class="hero">
+      <p class="eyebrow">FINAL PUBLICATION STEP</p>
+      <h1>One bot check.<br>Then it is public.</h1>
+      <p>This separate page never receives your recovery file or password. It submits only the signed public registration prepared on the previous page.</p>
+      <div class="status" id="activate-status" role="status" aria-live="polite">Loading signed registration…</div>
+    </section>
+
+    <section class="card activate-card" id="activate-panel">
+      <div class="step">SIGNED REQUEST</div>
+      <dl class="review-list">
+        <div><dt>Display name</dt><dd id="activate-name">—</dd></div>
+        <div><dt>DID</dt><dd id="activate-did">—</dd></div>
+        <div><dt>SHA-256</dt><dd id="activate-hash">—</dd></div>
+      </dl>
+      <div id="turnstile-widget" class="cf-turnstile" data-callback="onTurnstileSuccess" data-expired-callback="onTurnstileExpired" data-error-callback="onTurnstileError" data-theme="dark"></div>
+      <p class="boundary">Passing this check publishes the signed request immediately. It does not create a VERIFIED badge.</p>
+    </section>
+
+    <section class="card success activate-card" id="activate-success" hidden>
+      <div class="step">✓ SELF-REGISTERED · UNVERIFIED</div>
+      <h2>Passport is public</h2>
+      <p class="did" id="activate-result-did"></p>
+      <a class="button-link" id="open-created-passport">Open public Passport →</a>
+    </section>
+  </main>
+  <script src="registration-config.js"></script>
+  <script src="activate-bundle.js" defer></script>
+  <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+</body>
+</html>

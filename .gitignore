@@ -8,3 +8,5 @@ test-artifacts/
 *.key
 *.agent-passport-key
 *.log
+.wrangler/
+.dev.vars*
