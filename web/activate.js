@@ -55,8 +55,6 @@ try {
   $('activate-did').textContent = pending.registration.payload.did;
   $('activate-name').textContent = pending.registration.payload.profile.displayName;
   $('activate-hash').textContent = pending.registration.payloadSha256;
-  const widget = $('turnstile-widget');
-  widget.dataset.sitekey = config.turnstileSiteKey;
   status('Complete the Cloudflare check. Only the already-signed public request will be submitted.', 'working');
 } catch (error) {
   $('activate-panel').hidden = true;
