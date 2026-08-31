@@ -45,8 +45,8 @@ test('fails closed for a wrong password', async () => {
 test('fails closed for modified ciphertext', async () => {
   const original = await recovery();
   const modified = structuredClone(original);
-  const last = modified.ciphertext.at(-1);
-  modified.ciphertext = `${modified.ciphertext.slice(0, -1)}${last === 'A' ? 'B' : 'A'}`;
+  const first = modified.ciphertext[0];
+  modified.ciphertext = `${first === 'A' ? 'B' : 'A'}${modified.ciphertext.slice(1)}`;
   await assert.rejects(verifyRecoveryFile(modified, PASSWORD), /wrong or the file was modified/);
 });
 
