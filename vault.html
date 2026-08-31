@@ -37,6 +37,27 @@
         </form>
       </article>
 
+      <article class="card import-card">
+        <div class="step">EXISTING DID</div>
+        <h2>Bring a key from elsewhere</h2>
+        <p>The safer default is an encrypted Agent Passport recovery file. Use this one-time import only when another tool gave you a raw 32-byte Ed25519 seed.</p>
+        <details id="import-details">
+          <summary>I only have a raw private key</summary>
+          <div class="caution">
+            <strong>A raw seed controls the DID.</strong>
+            <span>Check that the address bar says <b>flop-agent-passport.pages.dev</b>. The seed is matched to the DID, encrypted in this tab, cleared from the form, and never sent or stored by this site.</span>
+          </div>
+          <form id="import-form">
+            <label>Existing Ed25519 DID<input id="import-did" type="text" inputmode="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="did:key:z6Mk…" required></label>
+            <label>32-byte private seed<input id="import-private-key" type="password" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="64 hex characters or base64url" required></label>
+            <label>New recovery password<input id="import-password" type="password" minlength="14" autocomplete="new-password" required></label>
+            <label>Confirm password<input id="import-confirm-password" type="password" minlength="14" autocomplete="new-password" required></label>
+            <label class="check"><input id="import-risk-ack" type="checkbox" required><span>I checked this domain and understand that anyone with this seed can control the DID.</span></label>
+            <button id="import-button" type="submit">Match DID and encrypt locally</button>
+          </form>
+        </details>
+      </article>
+
       <article class="card" id="created-panel" hidden>
         <div class="step">02</div>
         <h2>Download backup</h2>

@@ -1,6 +1,6 @@
-import { createRecoveryFile, parseRecoveryFile, serializeRecoveryFile, verifyRecoveryFile } from './key-vault-core.js';
+import { createRecoveryFile, createRecoveryFileFromSeed, parseRecoveryFile, serializeRecoveryFile, verifyRecoveryFile } from './key-vault-core.js';
 
-const state = { encryptedBackup: null, pendingDid: null, downloaded: false };
+const state = { encryptedBackup: null, pendingDid: null, downloaded: false, mode: null };
 const $ = id => document.getElementById(id);
 
 function setStatus(message, tone = '') {
@@ -13,6 +13,20 @@ function clearSecretInputs() {
   $('new-password').value = '';
   $('confirm-password').value = '';
   $('restore-password').value = '';
+  $('import-private-key').value = '';
+  $('import-password').value = '';
+  $('import-confirm-password').value = '';
+}
+
+function stageRecovery(recovery, mode) {
+  state.encryptedBackup = serializeRecoveryFile(recovery);
+  state.pendingDid = recovery.did;
+  state.downloaded = false;
+  state.mode = mode;
+  $('created-did').textContent = recovery.did;
+  $('created-panel').hidden = false;
+  $('restore-panel').hidden = false;
+  $('download-button').disabled = false;
 }
 
 function downloadBackup() {
@@ -45,14 +59,39 @@ async function createIdentity(event) {
   setStatus('Creating Ed25519 identity and encrypting it locally…', 'working');
   try {
     const recovery = await createRecoveryFile(password);
-    state.encryptedBackup = serializeRecoveryFile(recovery);
-    state.pendingDid = recovery.did;
-    state.downloaded = false;
-    $('created-did').textContent = recovery.did;
-    $('created-panel').hidden = false;
-    $('restore-panel').hidden = false;
-    $('download-button').disabled = false;
+    stageRecovery(recovery, 'created');
     setStatus('Identity created locally. Download and verify the encrypted backup to finish.', 'working');
+  } catch (error) {
+    setStatus(error.message, 'error');
+  } finally {
+    clearSecretInputs();
+    button.disabled = false;
+  }
+}
+
+async function importIdentity(event) {
+  event.preventDefault();
+  const did = $('import-did').value.trim();
+  const rawSeed = $('import-private-key').value;
+  const password = $('import-password').value;
+  const confirmation = $('import-confirm-password').value;
+  if (password !== confirmation) {
+    setStatus('The new recovery passwords do not match.', 'error');
+    return;
+  }
+  if (!$('import-risk-ack').checked) {
+    setStatus('Confirm that you checked this domain and understand the raw-key risk.', 'error');
+    return;
+  }
+  const button = $('import-button');
+  button.disabled = true;
+  setStatus('Matching the private seed to this DID and encrypting it locally…', 'working');
+  try {
+    const recovery = await createRecoveryFileFromSeed(did, rawSeed, password);
+    stageRecovery(recovery, 'imported');
+    $('import-did').value = '';
+    $('import-risk-ack').checked = false;
+    setStatus('DID control proved locally. Download and re-import the encrypted backup to finish.', 'working');
   } catch (error) {
     setStatus(error.message, 'error');
   } finally {
@@ -82,9 +121,15 @@ async function verifyBackup(event) {
     const result = await verifyRecoveryFile(recovery, password);
     $('verified-did').textContent = result.did;
     $('success-panel').hidden = false;
-    $('issuance-state').textContent = state.pendingDid ? 'PASSPORT IDENTITY ISSUED' : 'EXISTING IDENTITY RECOVERED';
+    const completedMode = state.mode;
+    $('issuance-state').textContent = completedMode === 'created'
+      ? 'PASSPORT IDENTITY ISSUED'
+      : completedMode === 'imported'
+        ? 'EXISTING DID IMPORTED'
+        : 'EXISTING IDENTITY RECOVERED';
     state.encryptedBackup = null;
     state.pendingDid = null;
+    state.mode = null;
     setStatus('Backup restored and challenge signature verified. No private key was uploaded.', 'success');
   } catch (error) {
     setStatus(error.message, 'error');
@@ -95,5 +140,6 @@ async function verifyBackup(event) {
 }
 
 $('create-form').addEventListener('submit', createIdentity);
+$('import-form').addEventListener('submit', importIdentity);
 $('download-button').addEventListener('click', downloadBackup);
 $('restore-form').addEventListener('submit', verifyBackup);

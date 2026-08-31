@@ -102,12 +102,9 @@ async function deriveWrappingKey(password, kdf) {
   });
 }
 
-export async function createRecoveryFile(password, cryptoApi = globalThis.crypto) {
+async function encryptPrivateKey(did, privatePkcs8, password, cryptoApi = globalThis.crypto) {
   validatePassword(password);
-  const keyPair = await cryptoApi.subtle.generateKey({ name: 'Ed25519' }, true, ['sign', 'verify']);
-  const publicRaw = new Uint8Array(await cryptoApi.subtle.exportKey('raw', keyPair.publicKey));
-  const privatePkcs8 = new Uint8Array(await cryptoApi.subtle.exportKey('pkcs8', keyPair.privateKey));
-  const did = didFromPublicKey(publicRaw);
+  publicKeyFromDid(did);
   const salt = cryptoApi.getRandomValues(new Uint8Array(16));
   const nonce = cryptoApi.getRandomValues(new Uint8Array(12));
   const kdf = { ...DEFAULT_KDF, salt: bytesToBase64Url(salt) };
@@ -127,8 +124,67 @@ export async function createRecoveryFile(password, cryptoApi = globalThis.crypto
       createdAt: new Date().toISOString()
     };
   } finally {
-    privatePkcs8.fill(0);
     wrappingBytes.fill(0);
+  }
+}
+
+export async function createRecoveryFile(password, cryptoApi = globalThis.crypto) {
+  validatePassword(password);
+  const keyPair = await cryptoApi.subtle.generateKey({ name: 'Ed25519' }, true, ['sign', 'verify']);
+  const publicRaw = new Uint8Array(await cryptoApi.subtle.exportKey('raw', keyPair.publicKey));
+  const privatePkcs8 = new Uint8Array(await cryptoApi.subtle.exportKey('pkcs8', keyPair.privateKey));
+  const did = didFromPublicKey(publicRaw);
+  try {
+    return await encryptPrivateKey(did, privatePkcs8, password, cryptoApi);
+  } finally {
+    privatePkcs8.fill(0);
+  }
+}
+
+function parseExternalSeed(rawSeed) {
+  if (typeof rawSeed !== 'string') throw new Error('Enter a 32-byte Ed25519 seed as 64 hex characters or base64url');
+  const compact = rawSeed.trim().replace(/\s+/g, '').replace(/^0x/i, '');
+  if (/^[0-9a-fA-F]{64}$/.test(compact)) {
+    return Uint8Array.from(compact.match(/../g), byte => Number.parseInt(byte, 16));
+  }
+  if (/^[A-Za-z0-9_-]{43}$/.test(compact)) {
+    const decoded = base64UrlToBytes(compact);
+    if (decoded.length === 32) return decoded;
+  }
+  throw new Error('Enter a 32-byte Ed25519 seed as 64 hex characters or base64url');
+}
+
+export async function createRecoveryFileFromSeed(did, rawSeed, password, cryptoApi = globalThis.crypto) {
+  validatePassword(password);
+  const publicRaw = publicKeyFromDid(did);
+  const seed = parseExternalSeed(rawSeed);
+  let privatePkcs8;
+  try {
+    const privateJwk = {
+      kty: 'OKP',
+      crv: 'Ed25519',
+      d: bytesToBase64Url(seed),
+      x: bytesToBase64Url(publicRaw),
+      key_ops: ['sign'],
+      ext: true
+    };
+    let privateKey;
+    try {
+      privateKey = await cryptoApi.subtle.importKey('jwk', privateJwk, { name: 'Ed25519' }, true, ['sign']);
+      const publicKey = await cryptoApi.subtle.importKey('raw', publicRaw, { name: 'Ed25519' }, false, ['verify']);
+      const challenge = cryptoApi.getRandomValues(new Uint8Array(32));
+      const signature = await cryptoApi.subtle.sign({ name: 'Ed25519' }, privateKey, challenge);
+      if (!(await cryptoApi.subtle.verify({ name: 'Ed25519' }, publicKey, signature, challenge))) {
+        throw new Error('mismatch');
+      }
+    } catch {
+      throw new Error('This private key does not control this DID');
+    }
+    privatePkcs8 = new Uint8Array(await cryptoApi.subtle.exportKey('pkcs8', privateKey));
+    return await encryptPrivateKey(did, privatePkcs8, password, cryptoApi);
+  } finally {
+    seed.fill(0);
+    privatePkcs8?.fill(0);
   }
 }
 

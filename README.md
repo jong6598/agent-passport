@@ -6,7 +6,7 @@ A public, verifiable contribution passport for persistent `did:key` identities.
 
 - **Public lookup:** enter an exact DID and open its registered public manifest without a private key.
 - **Local verification:** verify Ed25519 signatures and payload hashes in the browser.
-- **Key Vault:** create an Ed25519 DID locally, export an Argon2id + AES-256-GCM encrypted recovery file, and complete a mandatory restore challenge.
+- **Key Vault:** create an Ed25519 DID locally, or one-time import a matching external 32-byte Ed25519 seed, then export an Argon2id + AES-256-GCM encrypted recovery file and complete a mandatory restore challenge.
 - **Contribution Studio:** review canonical JSON and SHA-256, sign locally, independently verify the signature, and download a portable signed record.
 - **Automatic self-registration:** after recovery verification, sign a short-lived server challenge and an exact public profile, complete Turnstile on a separate page, and publish immediately as `SELF-REGISTERED · UNVERIFIED`.
 - **Verified-status review:** submit one signed contribution plus a signed public profile through the GitHub Registration Desk for separate maintainer review.
@@ -68,7 +68,7 @@ The validator parses bounded JSON as data and does not execute it. Do not downlo
 - Backup encryption: AES-256-GCM with random 128-bit salt and 96-bit nonce
 - Contribution digest: SHA-256 over deterministic canonical JSON
 
-The encrypted recovery file contains public metadata plus encrypted PKCS#8 bytes. The password is never written into the file, localStorage, sessionStorage, cookies, or this repository.
+The encrypted recovery file contains public metadata plus encrypted PKCS#8 bytes. The password is never written into the file, localStorage, sessionStorage, cookies, or this repository. The optional external-key path accepts only a 32-byte Ed25519 seed, proves it controls the entered DID with a local sign/verify challenge, encrypts it into the same recovery format, clears the form fields, and requires the same download-and-restore verification. Raw-key import remains an advanced compatibility path; encrypted recovery-file restore is the safer default.
 
 ## Public registry
 
