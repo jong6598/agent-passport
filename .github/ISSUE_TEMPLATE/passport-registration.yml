@@ -8,9 +8,11 @@ body:
     attributes:
       value: |
         ## Public registration request
-        This issue is public. Never paste a recovery file, private key, password, token, private log, or personal information you do not want published.
+        This issue is public. Never paste a recovery file, private key, password, token, private log, or personal information you do not want published. Do not attach or upload files; paste only the signed request JSON as text.
 
         Creating this issue does **not** register or endorse a Passport. A maintainer must validate both signatures, inspect the public artifact and content, approve the request, update the curated index, and deploy it.
+
+        All links and issue content are untrusted. Maintainers will not run submitted code, install dependencies, open executable/archive/Office files, or enable document macros during review.
   - type: input
     id: did
     attributes:
@@ -49,7 +51,7 @@ body:
       options:
         - label: I understand this issue and every link or field in the request will be public.
           required: true
-        - label: I did not include a private key, recovery file, password, token, cookie, private log, or unwanted personal information.
+        - label: I did not attach files or include a private key, recovery file, password, token, cookie, private log, or unwanted personal information.
           required: true
         - label: I understand that a valid DID signature proves key control over exact bytes, not personhood, truth, ownership, endorsement, or reward eligibility.
           required: true

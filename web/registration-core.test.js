@@ -83,3 +83,23 @@ test('rejects registration without explicit pending human review', async () => {
   document.review.status = 'approved';
   await assert.rejects(() => validateSignedRegistration(document), /pending human review/);
 });
+
+test('rejects local, IP-literal, and custom-port artifact URLs', async () => {
+  for (const url of ['https://localhost/repo', 'https://127.0.0.1/repo', 'https://[::1]/repo', 'https://example.com:8443/repo']) {
+    const { document } = await signedRegistration();
+    document.payload.contributions[0].payload.artifact.url = url;
+    await assert.rejects(() => validateSignedRegistration(document), /public hostname|custom port/);
+  }
+});
+
+test('rejects hostile JSON shape before canonicalization', async () => {
+  const { document } = await signedRegistration();
+  let nested = {};
+  document.payload.unexpected = nested;
+  for (let index = 0; index < 25; index += 1) nested = nested.next = {};
+  await assert.rejects(() => validateSignedRegistration(document), /nested too deeply/);
+
+  const polluted = JSON.parse(JSON.stringify((await signedRegistration()).document));
+  polluted.payload.profile = JSON.parse('{"displayName":"TEST BUILDER","type":"BUILDER","operatorRegion":"KOREA","languages":["KO"],"__proto__":{"admin":true}}');
+  await assert.rejects(() => validateSignedRegistration(polluted), /Unsafe JSON field/);
+});

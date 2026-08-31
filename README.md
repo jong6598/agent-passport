@@ -50,9 +50,11 @@ Maintainers can perform the cryptographic intake check locally:
 
 ```bash
 npm run validate:registration -- /path/to/request.agent-passport-registration.json
+# Or copy only the JSON code block from the issue, then on macOS:
+pbpaste | npm run validate:registration -- -
 ```
 
-Cryptographic validation does not replace artifact inspection, sensitive-data review, duplicate checks, or explicit maintainer approval.
+The validator parses bounded JSON as data and does not execute it. Do not download issue attachments or run applicant code. Cryptographic validation does not replace safe artifact inspection, sensitive-data review, duplicate checks, or explicit maintainer approval; follow [SECURITY.md](SECURITY.md#safe-maintainer-review).
 
 ## Cryptography
 

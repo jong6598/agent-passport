@@ -6,6 +6,25 @@ const REGISTRATION_PAYLOAD_SCHEMA = 'agent-passport-registration-v1';
 const REGISTRATION_SCHEMA = 'agent-passport-signed-registration-v1';
 const CATEGORIES = new Set(['CODE', 'RESEARCH', 'DESIGN', 'LOCALIZATION', 'COMMUNITY', 'OTHER']);
 const AGENT_TYPES = new Set(['AGENT', 'BUILDER', 'RESEARCHER', 'CREATOR', 'COMMUNITY', 'OTHER']);
+const FORBIDDEN_OBJECT_KEYS = new Set(['__proto__', 'constructor', 'prototype']);
+
+function assertSafeJsonShape(root) {
+  const stack = [{ value: root, depth: 0 }];
+  let nodes = 0;
+  while (stack.length) {
+    const { value, depth } = stack.pop();
+    nodes += 1;
+    if (nodes > 5000) throw new Error('Registration JSON is too complex');
+    if (depth > 20) throw new Error('Registration JSON is nested too deeply');
+    if (!value || typeof value !== 'object') continue;
+    const keys = Object.keys(value);
+    if (keys.length > 100) throw new Error('Registration JSON object has too many fields');
+    for (const key of keys) {
+      if (FORBIDDEN_OBJECT_KEYS.has(key)) throw new Error(`Unsafe JSON field: ${key}`);
+      stack.push({ value: value[key], depth: depth + 1 });
+    }
+  }
+}
 
 export function canonicalJson(value) {
   if (value === null || typeof value === 'boolean' || typeof value === 'string') return JSON.stringify(value);
@@ -37,7 +56,11 @@ function text(value, name, min, max) {
 function publicHttpsUrl(value) {
   let url;
   try { url = new URL(value); } catch { throw new Error('Artifact URL is invalid'); }
-  if (url.protocol !== 'https:' || url.username || url.password || url.href.length > 2048) throw new Error('Public registration requires an HTTPS artifact URL without embedded credentials');
+  if (url.protocol !== 'https:' || url.username || url.password || url.port || url.href.length > 2048) throw new Error('Public registration requires a standard HTTPS artifact URL without embedded credentials or a custom port');
+  const hostname = url.hostname.toLowerCase();
+  const localName = hostname === 'localhost' || hostname.endsWith('.localhost') || hostname.endsWith('.local') || hostname.endsWith('.internal') || hostname.endsWith('.home') || hostname.endsWith('.lan');
+  const ipLiteral = /^\d{1,3}(?:\.\d{1,3}){3}$/.test(hostname) || hostname.includes(':');
+  if (localName || ipLiteral || !hostname.includes('.')) throw new Error('Artifact URL must use a public hostname, not a local name or IP address');
   return url.href;
 }
 
@@ -57,6 +80,7 @@ function validateProfile(profile) {
 }
 
 export async function validateSignedContribution(document, cryptoApi = globalThis.crypto) {
+  assertSafeJsonShape(document);
   if (!document || document.schema !== CONTRIBUTION_SCHEMA) throw new Error('Unsupported signed contribution file');
   const payload = document.payload;
   if (!payload || payload.schema !== 'agent-passport-contribution-v1') throw new Error('Contribution payload is missing or unsupported');
@@ -97,6 +121,7 @@ export function buildRegistrationPayload({ profile, signedContribution, submitte
 }
 
 export async function validateSignedRegistration(document, cryptoApi = globalThis.crypto) {
+  assertSafeJsonShape(document);
   if (!document || document.schema !== REGISTRATION_SCHEMA) throw new Error('Unsupported registration request');
   const payload = document.payload;
   if (!payload || payload.schema !== REGISTRATION_PAYLOAD_SCHEMA) throw new Error('Registration payload is missing or unsupported');
