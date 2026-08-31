@@ -1,0 +1,118 @@
+/*
+  FLOP palette adaptation only.
+  Typography, grain, paper textures, gradients, geometry and component shapes
+  remain owned by the original Agent Passport design.
+*/
+:root{
+  color-scheme:dark;
+  --flop-base:#0A1128;
+  --flop-surface:#151D32;
+  --flop-surface-light:#232A3E;
+  --flop-ice:#F5F7FA;
+  --flop-secondary:#A1A7AE;
+  --flop-grey:#5C6670;
+  --flop-blue:#0466C8;
+  --flop-cyan:#00B4D8;
+  --flop-cyan-hover:#3DC5E0;
+  --flop-green:#32D74B;
+  --flop-red:#FF453A;
+
+  /* Original homepage tokens, recolored only. */
+  --forest:var(--flop-base);
+  --forest-2:var(--flop-surface);
+  --ink:var(--flop-ice);
+  --red:var(--flop-blue);
+  --blue:var(--flop-cyan);
+  --gold:var(--flop-cyan);
+  --muted:var(--flop-secondary);
+  --cream:var(--flop-ice);
+
+  /* Original tool-page tokens, recolored only. */
+  --bg:#070C20;
+  --card:var(--flop-surface);
+  --green:var(--flop-cyan);
+  --line:var(--flop-surface-light);
+  --amber:var(--flop-blue);
+}
+
+/* Preserve the homepage grain and the secondary-page radial glow. */
+body:has(.intro){background:var(--flop-base);color:var(--flop-ice)}
+body:has(.hero){
+  background:radial-gradient(circle at 80% 0,rgba(4,102,200,.28) 0,transparent 36%),var(--bg);
+  color:var(--flop-ice);
+}
+
+/* Homepage shell: same forms and typography, FLOP colors. */
+.wordmark-seal{border-color:var(--flop-cyan);color:var(--flop-cyan)}
+.wordmark small,.local-pill{color:var(--flop-secondary)}
+.local-pill i{background:var(--flop-green);box-shadow:0 0 10px rgba(50,215,75,.65)}
+.kicker{color:#7DD3E4}
+.intro h1 em{color:var(--flop-cyan)}
+.intro-copy{color:#B7C0CB}
+.independence-note{
+  margin:18px auto 0;
+  color:var(--flop-ice);
+  font-size:14px;
+  line-height:1.6;
+}
+.primary,.did-search button{background:var(--flop-cyan);border-color:var(--flop-cyan);color:var(--flop-base)}
+.primary:hover,.did-search button:hover{background:var(--flop-cyan-hover);border-color:var(--flop-cyan-hover)}
+.secondary{border-color:rgba(245,247,250,.24);color:var(--flop-ice)}
+.secondary:hover{border-color:var(--flop-cyan);color:var(--flop-cyan)}
+.did-search label,.did-search p{color:var(--flop-secondary)}
+.did-search input{border-color:rgba(245,247,250,.28);background:#070C20;color:var(--flop-ice)}
+.did-search p.error{color:var(--flop-red)}
+
+/* The document remains warm paper; only functional inks use brand colors. */
+.page{--ink:var(--flop-base)}
+.passport-shadow{background:#030614}
+.passport-book{filter:drop-shadow(0 24px 24px rgba(3,6,20,.42))}
+.cover-spine{
+  background:linear-gradient(90deg,rgba(4,102,200,.45),rgba(0,180,216,.30),rgba(4,102,200,.42));
+  box-shadow:0 0 15px rgba(0,180,216,.22);
+}
+.document-code b:last-child{background:var(--flop-blue);color:var(--flop-ice)}
+.holo{color:var(--flop-blue);border-color:var(--flop-blue)}
+.did-block button,.visa-main button,.visa-main .artifact-link{color:var(--flop-blue)}
+.verification-lamp.pass>span{background:var(--flop-green);box-shadow:0 0 0 4px rgba(50,215,75,.12),0 0 14px rgba(50,215,75,.55)}
+.verification-lamp.fail>span{background:var(--flop-red)}
+.visa.verified{--stamp:var(--flop-green)}
+.visa.draft{--stamp:var(--flop-cyan)}
+.visa.planned{--stamp:var(--flop-blue)}
+.verify-button{background:var(--flop-base);color:var(--flop-ice)}
+.verify-button:hover{background:var(--flop-surface)}
+.seal-mini{border-color:var(--flop-green);color:var(--flop-green)}
+.download-button{background:var(--flop-cyan);color:var(--flop-base)}
+
+/* Keep the original line-based explainer, recolor its state semantics. */
+.section-number{color:#7DD3E4}
+.trust-icon.verified{color:var(--flop-green)}
+.trust-icon.source{color:var(--flop-cyan)}
+.trust-icon.limit{color:var(--flop-red)}
+.trust-grid p,footer{color:var(--flop-secondary)}
+footer a{color:var(--flop-cyan)}
+.toast{background:var(--flop-ice);color:var(--flop-base)}
+
+/* Key Vault, Studio, registration and activation: color substitution only. */
+.topbar a,.eyebrow,.step{color:var(--flop-cyan)}
+.hero>p:not(.eyebrow),.card p,.limits,.boundary{color:var(--flop-secondary)}
+.status{border-color:var(--flop-surface-light);background:#0B1228;color:var(--flop-secondary)}
+.status[data-tone=working]{border-color:var(--flop-blue);color:#72AEEA}
+.status[data-tone=success]{border-color:var(--flop-green);color:var(--flop-green)}
+.status[data-tone=error]{border-color:var(--flop-red);color:var(--flop-red)}
+.card{border-color:var(--flop-surface-light);background:linear-gradient(145deg,#18213A,#0D152B)}
+label{color:#C4CBD3}
+input,select,textarea{border-color:#33405C;background:#070C20;color:var(--flop-ice)}
+input:focus,select:focus,textarea:focus{outline-color:var(--flop-cyan)}
+button,.button-link{background:var(--flop-cyan);color:var(--flop-base)}
+button:hover,.button-link:hover{background:var(--flop-cyan-hover)}
+.outline{border-color:var(--flop-surface-light);background:transparent;color:var(--flop-ice)}
+.outline:hover{border-color:var(--flop-cyan);color:var(--flop-cyan)}
+.did{background:#070C20;border-left-color:var(--flop-cyan);color:var(--flop-ice)!important}
+.success{border-color:var(--flop-green)}
+.inline-check,.check-row,.review pre,.publication pre,.review code,.success code{background:#070C20;border-color:var(--flop-surface-light)}
+.inline-check[data-valid="true"],.review code,.success code{border-color:var(--flop-green);color:var(--flop-green)}
+.limits{border-color:var(--flop-surface-light)}
+.limits h2{color:var(--flop-ice)}
+.review-list div{border-color:var(--flop-surface-light)}
+.review-list dt{color:var(--flop-secondary)}

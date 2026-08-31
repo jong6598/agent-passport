@@ -5,6 +5,7 @@ const root = resolve(import.meta.dirname, '..');
 const excluded = new Set(['.git', 'node_modules', 'dist']);
 const expectedDist = new Set([
   '.nojekyll', 'activate-bundle.js', 'activate.html', 'app.js', 'index.html',
+  'flop-theme.css',
   'publish-bundle.js', 'publish.css', 'publish.html', 'registration-config.js',
   'studio-bundle.js', 'studio.css', 'studio.html',
   'submit-bundle.js', 'submit.css', 'submit.html',

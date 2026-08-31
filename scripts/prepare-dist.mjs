@@ -8,6 +8,7 @@ const files = [
   'index.html',
   'app.js',
   'styles.css',
+  'flop-theme.css',
   'vault.html',
   'vault.css',
   'vault-bundle.js',
