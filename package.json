@@ -1,0 +1,25 @@
+{
+  "name": "agent-passport",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build:vault": "esbuild web/vault.js --bundle --minify --format=iife --target=es2022 --outfile=vault-bundle.js",
+    "build:studio": "esbuild web/studio.js --bundle --minify --format=iife --target=es2022 --outfile=studio-bundle.js",
+    "build": "npm run build:vault && npm run build:studio",
+    "test:vault": "node --test web/key-vault-core.test.js",
+    "test:browser": "node web/browser-smoke.js",
+    "test:passport": "node web/passport-browser-smoke.js",
+    "test:studio": "node web/studio-browser-smoke.js",
+    "prepare:dist": "node scripts/prepare-dist.mjs",
+    "release:check": "node scripts/release-check.mjs",
+    "test": "npm run test:vault && npm run build && npm run prepare:dist && npm run release:check"
+  },
+  "dependencies": {
+    "hash-wasm": "4.12.0"
+  },
+  "devDependencies": {
+    "esbuild": "0.28.2",
+    "playwright-core": "1.62.1"
+  }
+}

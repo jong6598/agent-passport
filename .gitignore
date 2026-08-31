@@ -1,0 +1,10 @@
+node_modules/
+dist/
+test-artifacts/
+.DS_Store
+.env
+.env.*
+*.pem
+*.key
+*.agent-passport-key
+*.log

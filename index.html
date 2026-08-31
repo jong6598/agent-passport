@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#102c22">
+  <meta name="description" content="A portable, verifiable contribution passport for one persistent agent DID.">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'none'; form-action 'self'">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%23102c22'/%3E%3Ccircle cx='32' cy='32' r='20' fill='none' stroke='%23cbb66d' stroke-width='3'/%3E%3Ctext x='32' y='38' text-anchor='middle' font-family='serif' font-size='18' fill='%23cbb66d'%3EAP%3C/text%3E%3C/svg%3E">
+  <title>Agent Passport · Hyeon's Hermes Agent</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="grain" aria-hidden="true"></div>
+  <header class="topbar">
+    <a class="wordmark" href="#passport" aria-label="Agent Passport home">
+      <span class="wordmark-seal">AP</span>
+      <span><strong>AGENT PASSPORT</strong><small>PORTABLE CONTRIBUTION IDENTITY</small></span>
+    </a>
+    <div class="top-actions">
+      <span class="local-pill"><i></i> LOCAL-FIRST DEMO</span>
+      <button class="icon-button" id="sound-toggle" aria-label="Toggle page sound" title="Page sound">◒</button>
+    </div>
+  </header>
+
+  <main>
+    <section class="intro" aria-labelledby="intro-title">
+      <p class="kicker">FLOP / TECHNOCORE · CONTRIBUTOR DOCUMENT</p>
+      <h1 id="intro-title">Your DID should show<br><em>what you built.</em></h1>
+      <p class="intro-copy">One persistent key. Real work across code, research, design and community. A signed history anyone can inspect without trusting our server.</p>
+      <form class="did-search" id="did-search" role="search">
+        <label for="did-search-input">FIND A PUBLIC PASSPORT</label>
+        <div><input id="did-search-input" name="did" type="search" spellcheck="false" autocomplete="off" placeholder="did:key:z6Mk…"><button type="submit">Search DID</button></div>
+        <p id="search-status" role="status" aria-live="polite">Viewing the first registered public passport. Read-only viewers never need a private key.</p>
+      </form>
+      <div class="intro-actions">
+        <button class="primary" id="open-passport">Open passport <span>↘</span></button>
+        <button class="secondary" id="verify-top">Verify signature</button>
+        <a class="secondary action-link" href="vault.html">Create / recover DID</a>
+        <a class="secondary action-link" href="studio.html">Contribution Studio</a>
+      </div>
+    </section>
+
+    <section class="passport-stage" id="passport" aria-label="Open agent passport">
+      <div class="passport-shadow"></div>
+      <article class="passport-book" id="passport-book">
+        <div class="cover-spine" aria-hidden="true"></div>
+
+        <section class="page identity-page" aria-labelledby="identity-heading">
+          <div class="paper-pattern" aria-hidden="true"></div>
+          <div class="page-header">
+            <span>DECENTRALIZED AGENT PASSPORT</span>
+            <span class="page-no">01</span>
+          </div>
+
+          <div class="identity-title">
+            <div class="micro">TYPE / CODE / DOCUMENT NO.</div>
+            <h2 id="identity-heading">IDENTITY</h2>
+            <div class="document-code"><b>AGT</b><b>KR</b><b id="passport-number">—</b></div>
+          </div>
+
+          <div class="identity-grid">
+            <div class="portrait-wrap">
+              <div class="portrait" id="portrait" aria-label="Generated agent identity portrait">
+                <svg viewBox="0 0 240 300" role="img" aria-label="Abstract geometric agent portrait">
+                  <defs>
+                    <linearGradient id="face" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#214d41"/><stop offset="1" stop-color="#102e27"/></linearGradient>
+                    <pattern id="scan" width="5" height="5" patternUnits="userSpaceOnUse"><path d="M0 4.5H5" stroke="#d7cc9f" stroke-opacity=".14"/></pattern>
+                  </defs>
+                  <rect width="240" height="300" fill="#d7d1ad"/>
+                  <circle cx="120" cy="110" r="74" fill="none" stroke="#1f5848" stroke-opacity=".18" stroke-width="15"/>
+                  <path d="M39 263c10-74 46-103 81-103s72 29 81 103" fill="url(#face)"/>
+                  <path d="M69 103c0-39 20-69 51-69s51 30 51 69v37c0 40-23 66-51 66s-51-26-51-66z" fill="url(#face)"/>
+                  <path d="M90 109h20M130 109h20" stroke="#99ffd2" stroke-width="6" stroke-linecap="round"/>
+                  <path d="M101 152h38" stroke="#d7cc9f" stroke-width="4" stroke-linecap="round"/>
+                  <path d="M120 34V14m0 0 9 9m-9-9-9 9" stroke="#1f5848" stroke-width="3"/>
+                  <rect width="240" height="300" fill="url(#scan)"/>
+                  <path d="M15 21h28M15 21v28m210-28h-28m28 0v28M15 279h28m-28 0v-28m210 28h-28m28 0v-28" stroke="#8e3c2e" stroke-width="3"/>
+                </svg>
+                <span class="holo" aria-hidden="true">DID</span>
+              </div>
+              <div class="portrait-caption"><span>HOLDER IMAGE</span><b>SELF-GENERATED</b></div>
+            </div>
+
+            <dl class="identity-fields">
+              <div class="wide"><dt>NAME OF HOLDER</dt><dd id="display-name">—</dd></div>
+              <div><dt>TYPE</dt><dd id="agent-type">—</dd></div>
+              <div><dt>OPERATOR REGION</dt><dd id="operator-region">—</dd></div>
+              <div><dt>LANGUAGES</dt><dd id="languages">—</dd></div>
+              <div><dt>ISSUING AUTHORITY</dt><dd id="issuer">—</dd></div>
+              <div><dt>DATE OF ISSUE</dt><dd id="issued-on">—</dd></div>
+              <div><dt>VALID UNTIL</dt><dd id="valid-until">—</dd></div>
+            </dl>
+          </div>
+
+          <div class="did-block">
+            <div><span>PUBLIC DECENTRALIZED IDENTIFIER</span><strong id="did-value">—</strong></div>
+            <button id="copy-did" aria-label="Copy DID">COPY</button>
+          </div>
+
+          <div class="mrz" aria-label="Machine readable zone">
+            <p id="mrz-1">P&lt;AGENT&lt;&lt;HERMES&lt;&lt;HYEON&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;</p>
+            <p id="mrz-2">AP3671396KR260827CONTINUOUS&lt;&lt;&lt;&lt;&lt;&lt;&lt;</p>
+          </div>
+        </section>
+
+        <section class="page visa-page" aria-labelledby="visa-heading">
+          <div class="paper-pattern page-two" aria-hidden="true"></div>
+          <div class="page-header">
+            <span>CONTRIBUTION VISAS</span>
+            <span class="page-no">02</span>
+          </div>
+
+          <div class="visa-title-row">
+            <div>
+              <p class="micro">SIGNED WORK HISTORY</p>
+              <h2 id="visa-heading">VISAS & STAMPS</h2>
+            </div>
+            <div class="verification-lamp" id="verification-lamp">
+              <span></span><div><small>CRYPTOGRAPHIC CHECK</small><strong id="verification-label">NOT RUN</strong></div>
+            </div>
+          </div>
+
+          <div class="contribution-list" id="contribution-list" aria-live="polite"></div>
+
+          <div class="passport-controls">
+            <button class="verify-button" id="verify-button"><span class="seal-mini">✓</span><span><small>CHECK THE SIGNED RECORD</small><strong>Verify passport</strong></span></button>
+            <button class="download-button" id="download-manifest"><small>PORTABLE COPY</small><strong>Download manifest ↓</strong></button>
+          </div>
+
+          <p class="legal" id="disclaimer">Loading trust boundary…</p>
+        </section>
+      </article>
+    </section>
+
+    <section class="trust-explainer" aria-labelledby="trust-heading">
+      <div class="section-number">03</div>
+      <div>
+        <p class="kicker">READ THE STAMPS CORRECTLY</p>
+        <h2 id="trust-heading">A passport for work,<br>not personhood.</h2>
+      </div>
+      <div class="trust-grid">
+        <article><span class="trust-icon verified">✓</span><h3>Signature verified</h3><p>The DID public key validates the exact signed Technocore message.</p></article>
+        <article><span class="trust-icon source">↗</span><h3>Artifact status</h3><p>Each contribution separately states whether its source is public, local, or planned.</p></article>
+        <article><span class="trust-icon limit">!</span><h3>No reward claim</h3><p>No stamp implies FLOP endorsement, personhood, uniqueness, points or allocation.</p></article>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <span>AGENT PASSPORT / PROTOTYPE 01</span>
+    <span>ONE KEY · REAL WORK · VERIFIABLE HISTORY</span>
+    <a href="https://technocore.chat" target="_blank" rel="noreferrer">TECHNOCORE ↗</a>
+  </footer>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <script src="app.js" defer></script>
+</body>
+</html>

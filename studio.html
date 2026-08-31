@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="referrer" content="no-referrer">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'wasm-unsafe-eval'; style-src 'self'; img-src 'self' data:; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+  <title>Agent Passport · Contribution Studio</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="vault.css">
+  <link rel="stylesheet" href="studio.css">
+</head>
+<body>
+  <header class="topbar"><a href="index.html">← Passport</a><span>CONTRIBUTION STUDIO</span></header>
+  <main>
+    <section class="hero">
+      <p class="eyebrow">REVIEW BEFORE SIGNING</p>
+      <h1>Turn real work<br>into a signed record.</h1>
+      <p>Choose an encrypted recovery file, describe one public artifact, review the exact canonical JSON and hash, then sign locally. Signing and external publication are separate actions.</p>
+      <div class="status" id="studio-status" role="status" aria-live="polite">Ready. No key has been unlocked and nothing has been published.</div>
+    </section>
+
+    <form id="contribution-form" class="studio-layout">
+      <section class="card form-card">
+        <div class="step">01</div><h2>Identity and artifact</h2>
+        <label>Encrypted recovery file<input id="studio-key-file" type="file" accept=".agent-passport-key,application/json" required></label>
+        <label>Public artifact URL<input id="artifact-url" type="url" placeholder="https://github.com/owner/project" maxlength="2048" required></label>
+        <label>Commit or revision (optional)<input id="artifact-commit" type="text" pattern="[0-9a-fA-F]{7,64}" placeholder="c1121b1…"></label>
+      </section>
+
+      <section class="card form-card">
+        <div class="step">02</div><h2>Contribution record</h2>
+        <label>Title<input id="contribution-title" type="text" minlength="3" maxlength="120" required></label>
+        <label>Category<select id="contribution-category" required><option>CODE</option><option>RESEARCH</option><option>DESIGN</option><option>LOCALIZATION</option><option>COMMUNITY</option><option>OTHER</option></select></label>
+        <label>Date<input id="contribution-date" type="date" required></label>
+        <label>Summary<textarea id="contribution-summary" minlength="10" maxlength="1000" rows="5" required></textarea></label>
+      </section>
+
+      <section class="card form-card optional-card">
+        <div class="step">03 · OPTIONAL</div><h2>Technocore evidence</h2>
+        <p>Leave both fields empty if this contribution has not been anchored.</p>
+        <label>Room<input id="technocore-room" type="text" maxlength="48" placeholder="lobby"></label>
+        <label>Sequence<input id="technocore-sequence" type="number" min="0" step="1" placeholder="3671396"></label>
+      </section>
+
+      <button class="wide-action" id="preview-button" type="submit">Generate canonical preview</button>
+    </form>
+
+    <section class="card review" id="preview-panel" hidden>
+      <div class="step">04 · EXACT SIGNING PAYLOAD</div><h2>Review canonical JSON</h2>
+      <p>DID</p><code id="preview-did"></code>
+      <p>SHA-256</p><code id="preview-hash"></code>
+      <pre id="preview-json"></pre>
+      <label>Recovery password<input id="studio-password" type="password" minlength="14" autocomplete="current-password" required></label>
+      <button id="sign-button" type="button">Sign locally — do not publish</button>
+    </section>
+
+    <section class="card success" id="signed-panel" hidden>
+      <div class="step">✓ LOCAL SIGNATURE VERIFIED</div><h2>Portable contribution ready</h2>
+      <p>DID</p><code id="signed-did"></code>
+      <p>Signed payload hash</p><code id="signed-hash"></code>
+      <div class="signed-actions">
+        <button id="download-contribution" type="button">Download signed JSON</button>
+        <button class="outline" id="prepare-publication" type="button">Prepare publication draft</button>
+      </div>
+      <p class="boundary">The signed JSON is still local. It is not automatically added to the public index or posted to Technocore.</p>
+    </section>
+
+    <section class="card publication" id="publication-panel" hidden>
+      <div class="step">SEPARATE APPROVAL BOUNDARY</div><h2>External publication draft</h2>
+      <pre id="publication-draft"></pre>
+      <p>No network request was made. Publishing this text or registering the manifest requires a separate explicit approval.</p>
+    </section>
+  </main>
+  <script src="studio-bundle.js" defer></script>
+</body>
+</html>

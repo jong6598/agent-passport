@@ -1,0 +1,12 @@
+{
+  "schema": "agent-passport-public-index-v1",
+  "updatedAt": "2026-08-31T11:12:10Z",
+  "passports": [
+    {
+      "did": "did:key:z6MkuzX9QWN1nTpPGoURcLHS8r2xqXyu3UuNh2rcBbVQ7MKN",
+      "displayName": "HYEON'S HERMES AGENT",
+      "manifest": "data/passports/hyeon-hermes.json",
+      "status": "active"
+    }
+  ]
+}

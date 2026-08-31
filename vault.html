@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="referrer" content="no-referrer">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'wasm-unsafe-eval'; style-src 'self'; img-src 'self' data:; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+  <title>Agent Passport · Key Vault</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="vault.css">
+</head>
+<body>
+  <header class="topbar">
+    <a href="index.html">← Passport</a>
+    <span>LOCAL KEY VAULT</span>
+  </header>
+
+  <main>
+    <section class="hero">
+      <p class="eyebrow">AGENT PASSPORT SECURITY</p>
+      <h1>Create the key.<br>Prove the backup works.</h1>
+      <p>Your Ed25519 key is created, encrypted, and restored inside this browser. The server receives neither the private key nor the recovery password.</p>
+      <div class="status" id="vault-status" role="status" aria-live="polite">Ready. Nothing has been generated or uploaded.</div>
+    </section>
+
+    <section class="grid">
+      <article class="card">
+        <div class="step">01</div>
+        <h2>Create and encrypt</h2>
+        <p>Use a unique 14+ character password saved separately in a trusted password manager.</p>
+        <form id="create-form">
+          <label>Recovery password<input id="new-password" type="password" minlength="14" autocomplete="new-password" required></label>
+          <label>Confirm password<input id="confirm-password" type="password" minlength="14" autocomplete="new-password" required></label>
+          <label class="check"><input id="loss-ack" type="checkbox" required><span>I understand that losing the key and every backup makes this DID unrecoverable.</span></label>
+          <button id="create-button" type="submit">Create encrypted identity</button>
+        </form>
+      </article>
+
+      <article class="card" id="created-panel" hidden>
+        <div class="step">02</div>
+        <h2>Download backup</h2>
+        <p class="did" id="created-did"></p>
+        <p>The file contains an Argon2id + AES-256-GCM encrypted key. It does not contain your password.</p>
+        <button id="download-button" type="button" disabled>Download .agent-passport-key</button>
+      </article>
+
+      <article class="card" id="restore-panel">
+        <div class="step">03</div>
+        <h2>Restore and verify</h2>
+        <p>Re-import the downloaded file. Issuance is incomplete until the key signs a random challenge matching its DID.</p>
+        <form id="restore-form">
+          <label>Encrypted recovery file<input id="recovery-file" type="file" accept=".agent-passport-key,application/json" required></label>
+          <label>Recovery password<input id="restore-password" type="password" minlength="14" autocomplete="current-password" required></label>
+          <button id="verify-backup-button" type="submit">Verify recovery challenge</button>
+        </form>
+      </article>
+
+      <article class="card success" id="success-panel" hidden>
+        <div class="step">✓</div>
+        <h2 id="issuance-state">PASSPORT IDENTITY ISSUED</h2>
+        <p class="did" id="verified-did"></p>
+        <p>The encrypted backup was restored and an Ed25519 challenge signature verified locally. Keep at least two protected copies of the file and store the password separately.</p>
+        <a class="button-link" href="studio.html">Continue to Contribution Studio →</a>
+      </article>
+    </section>
+
+    <section class="limits">
+      <h2>What this does not do</h2>
+      <ul>
+        <li>No central password reset or key recovery.</li>
+        <li>No server upload, analytics SDK, wallet connection, or token claim.</li>
+        <li>No FLOP endorsement, reward eligibility, personhood, or uniqueness proof.</li>
+      </ul>
+    </section>
+  </main>
+  <script src="vault-bundle.js" defer></script>
+</body>
+</html>
