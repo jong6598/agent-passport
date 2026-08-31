@@ -13,7 +13,7 @@ try {
   const external = [];
   page.on('console', message => { if (message.type() === 'error') errors.push(message.text()); });
   page.on('pageerror', error => errors.push(error.message));
-  page.on('request', request => { if (new URL(request.url()).origin !== origin) external.push(request.url()); });
+  page.on('request', request => { if (new URL(request.url()).origin !== new URL(origin).origin) external.push(request.url()); });
 
   await page.goto(`${origin}/index.html?did=${encodeURIComponent(did)}`, { waitUntil: 'networkidle' });
   await page.waitForFunction(() => document.querySelector('#verification-label')?.textContent === '2 SIGNATURES VERIFIED');
