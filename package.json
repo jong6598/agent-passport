@@ -12,6 +12,7 @@
     "build": "npm run build:vault && npm run build:studio && npm run build:submit && npm run build:publish && npm run build:activate",
     "test:vault": "node --test web/key-vault-core.test.js",
     "test:registration": "node --test web/registration-core.test.js shared/self-registration-core.test.js",
+    "test:worker": "node --test worker/worker-policy.test.js",
     "test:browser": "node web/browser-smoke.js",
     "test:passport": "node web/passport-browser-smoke.js",
     "test:studio": "node web/studio-browser-smoke.js",
@@ -20,7 +21,8 @@
     "validate:registration": "node scripts/validate-registration.mjs",
     "prepare:dist": "node scripts/prepare-dist.mjs",
     "release:check": "node scripts/release-check.mjs",
-    "test": "npm run test:vault && npm run test:registration && npm run build && npm run prepare:dist && npm run release:check"
+    "deploy:pages": "npm run test && npx -y wrangler@4.127.1 pages deploy dist --project-name flop-agent-passport --branch main",
+    "test": "npm run test:vault && npm run test:registration && npm run test:worker && npm run build && npm run prepare:dist && npm run release:check"
   },
   "dependencies": {
     "hash-wasm": "4.12.0"

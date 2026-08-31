@@ -4,13 +4,13 @@ compatibility_date = "2026-08-31"
 workers_dev = true
 
 [vars]
-ALLOWED_ORIGIN = "https://jong6598.github.io"
+ALLOWED_ORIGIN = "https://flop-agent-passport.pages.dev,https://jong6598.github.io"
 ENVIRONMENT = "production"
 IP_CHALLENGES_PER_DAY = "10"
 IP_REGISTRATIONS_PER_DAY = "3"
 GLOBAL_REGISTRATIONS_PER_DAY = "100"
 REQUIRE_TURNSTILE = "true"
-TURNSTILE_HOSTNAME = "jong6598.github.io"
+TURNSTILE_HOSTNAME = "flop-agent-passport.pages.dev,jong6598.github.io"
 
 [[d1_databases]]
 binding = "DB"

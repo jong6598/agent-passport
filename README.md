@@ -83,7 +83,7 @@ A valid signature proves control of the DID key over the registration bytes. It 
 
 ## Cloudflare operation and cost boundary
 
-Production uses Workers Free, D1 Free, and Turnstile Free. `wrangler.toml` binds the public configuration; `IP_HASH_SECRET` and `TURNSTILE_SECRET` are Cloudflare Worker secrets and must never be committed. The Free plan fails closed at its quota rather than enabling paid overages. Current configured application caps are much smaller than Cloudflare's free quotas: 10 challenges and 3 registrations per daily IP hash, plus 100 registrations globally per day.
+Production uses Cloudflare Pages Free at <https://flop-agent-passport.pages.dev>, Workers Free, D1 Free, and Turnstile Free. This is an independent community tool for FLOP / Technocore, not an official FLOP Labs service or endorsement. `wrangler.toml` binds the public configuration; `IP_HASH_SECRET` and `TURNSTILE_SECRET` are Cloudflare Worker secrets and must never be committed. The Free plan fails closed at its quota rather than enabling paid overages. Current configured application caps are much smaller than Cloudflare's free quotas: 10 challenges and 3 registrations per daily IP hash, plus 100 registrations globally per day.
 
 Official pricing references:
 
@@ -99,7 +99,13 @@ npm run prepare:dist
 npm run release:check
 ```
 
-GitHub Pages publishes only the allowlisted `dist/` output, not the development tree or `node_modules`.
+Cloudflare Pages publishes only the allowlisted `dist/` output, not the development tree or `node_modules`:
+
+```bash
+npm run deploy:pages
+```
+
+GitHub remains the source repository and CI surface. Its legacy Pages URL is not the canonical product address.
 
 ## Security
 

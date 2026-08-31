@@ -16,9 +16,14 @@ function errorResponse(error, status, origin) {
   return response({ ok: false, error: error.message }, status, origin);
 }
 
+export function configuredValueMatches(value, configuredValues) {
+  if (!value || !configuredValues) return false;
+  return configuredValues.split(',').map(item => item.trim()).filter(Boolean).includes(value);
+}
+
 function allowedOrigin(request, env) {
   const origin = request.headers.get('Origin');
-  if (!origin || origin !== env.ALLOWED_ORIGIN) return null;
+  if (!configuredValueMatches(origin, env.ALLOWED_ORIGIN)) return null;
   return origin;
 }
 
@@ -59,7 +64,7 @@ async function verifyTurnstile(token, ip, env) {
   const result = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', { method: 'POST', body: form });
   const verdict = await result.json();
   if (!verdict.success) throw new Error('Anti-bot verification failed');
-  if (verdict.hostname !== env.TURNSTILE_HOSTNAME) throw new Error('Anti-bot token was issued for a different host');
+  if (!configuredValueMatches(verdict.hostname, env.TURNSTILE_HOSTNAME)) throw new Error('Anti-bot token was issued for a different host');
 }
 
 function randomNonce(cryptoApi = globalThis.crypto) {
