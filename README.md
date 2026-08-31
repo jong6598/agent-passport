@@ -8,6 +8,7 @@ A public, verifiable contribution passport for persistent `did:key` identities.
 - **Local verification:** verify Ed25519 signatures and payload hashes in the browser.
 - **Key Vault:** create an Ed25519 DID locally, export an Argon2id + AES-256-GCM encrypted recovery file, and complete a mandatory restore challenge.
 - **Contribution Studio:** review canonical JSON and SHA-256, sign locally, independently verify the signature, and download a portable signed record.
+- **Approval-gated registration:** verify one signed contribution, review and sign the exact public profile, download a portable registration request, and hand it to a public GitHub application for maintainer review.
 - **Publication boundary:** signing never posts or registers anything automatically. External publication requires a separate explicit action.
 
 ## Trust limits
@@ -29,6 +30,7 @@ Open:
 - `http://127.0.0.1:8765/` — public Passport lookup
 - `http://127.0.0.1:8765/vault.html` — Key Vault
 - `http://127.0.0.1:8765/studio.html` — Contribution Studio
+- `http://127.0.0.1:8765/submit.html` — approval-gated Registration Desk
 
 Optional browser smoke tests use Google Chrome. On non-macOS systems, set `CHROME_EXECUTABLE_PATH` to the browser binary:
 
@@ -37,7 +39,20 @@ export CHROME_EXECUTABLE_PATH=/path/to/chrome  # omit on macOS with standard Chr
 npm run test:browser
 npm run test:passport
 npm run test:studio
+npm run test:submit
 ```
+
+## Registration review
+
+Registration Desk produces an `agent-passport-signed-registration-v1` request containing a signed public profile and one independently verified signed contribution. The applicant downloads and pastes that request into the repository's public Passport registration issue form. This is an application, not publication: a maintainer must validate it before changing `data/index.json` or adding a public manifest.
+
+Maintainers can perform the cryptographic intake check locally:
+
+```bash
+npm run validate:registration -- /path/to/request.agent-passport-registration.json
+```
+
+Cryptographic validation does not replace artifact inspection, sensitive-data review, duplicate checks, or explicit maintainer approval.
 
 ## Cryptography
 

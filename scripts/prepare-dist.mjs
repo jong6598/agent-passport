@@ -13,7 +13,10 @@ const files = [
   'vault-bundle.js',
   'studio.html',
   'studio.css',
-  'studio-bundle.js'
+  'studio-bundle.js',
+  'submit.html',
+  'submit.css',
+  'submit-bundle.js'
 ];
 
 await rm(dist, { recursive: true, force: true });

@@ -5,6 +5,7 @@ const root = resolve(import.meta.dirname, '..');
 const excluded = new Set(['.git', 'node_modules', 'dist']);
 const expectedDist = new Set([
   '.nojekyll', 'app.js', 'index.html', 'studio-bundle.js', 'studio.css', 'studio.html',
+  'submit-bundle.js', 'submit.css', 'submit.html',
   'styles.css', 'vault-bundle.js', 'vault.css', 'vault.html', 'data/index.json',
   'data/passports/hyeon-hermes.json'
 ]);
@@ -68,7 +69,7 @@ for (const entry of index.passports) {
   if (manifest.profile?.did !== entry.did) throw new Error(`Index/manifest DID mismatch: ${entry.did}`);
 }
 
-for (const bundle of ['vault-bundle.js', 'studio-bundle.js']) {
+for (const bundle of ['vault-bundle.js', 'studio-bundle.js', 'submit-bundle.js']) {
   if ((await stat(resolve(distRoot, bundle))).size < 10_000) throw new Error(`${bundle} appears incomplete`);
 }
 console.log(`Release check passed: ${sourceFiles.length} source files, ${distFiles.length} allowlisted deployment files, ${dids.size} Passport DID.`);

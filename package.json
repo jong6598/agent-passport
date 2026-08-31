@@ -6,14 +6,18 @@
   "scripts": {
     "build:vault": "esbuild web/vault.js --bundle --minify --format=iife --target=es2022 --outfile=vault-bundle.js",
     "build:studio": "esbuild web/studio.js --bundle --minify --format=iife --target=es2022 --outfile=studio-bundle.js",
-    "build": "npm run build:vault && npm run build:studio",
+    "build:submit": "esbuild web/submit.js --bundle --minify --format=iife --target=es2022 --outfile=submit-bundle.js",
+    "build": "npm run build:vault && npm run build:studio && npm run build:submit",
     "test:vault": "node --test web/key-vault-core.test.js",
+    "test:registration": "node --test web/registration-core.test.js",
     "test:browser": "node web/browser-smoke.js",
     "test:passport": "node web/passport-browser-smoke.js",
     "test:studio": "node web/studio-browser-smoke.js",
+    "test:submit": "node web/submit-browser-smoke.js",
+    "validate:registration": "node scripts/validate-registration.mjs",
     "prepare:dist": "node scripts/prepare-dist.mjs",
     "release:check": "node scripts/release-check.mjs",
-    "test": "npm run test:vault && npm run build && npm run prepare:dist && npm run release:check"
+    "test": "npm run test:vault && npm run test:registration && npm run build && npm run prepare:dist && npm run release:check"
   },
   "dependencies": {
     "hash-wasm": "4.12.0"

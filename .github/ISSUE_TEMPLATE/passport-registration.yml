@@ -1,0 +1,57 @@
+name: Passport registration
+description: Submit a locally signed Agent Passport registration request for human review.
+title: "Passport registration: "
+labels:
+  - registration
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## Public registration request
+        This issue is public. Never paste a recovery file, private key, password, token, private log, or personal information you do not want published.
+
+        Creating this issue does **not** register or endorse a Passport. A maintainer must validate both signatures, inspect the public artifact and content, approve the request, update the curated index, and deploy it.
+  - type: input
+    id: did
+    attributes:
+      label: DID
+      description: The exact did:key shown in your signed request.
+      placeholder: did:key:z6Mk…
+    validations:
+      required: true
+  - type: input
+    id: request_hash
+    attributes:
+      label: Registration request SHA-256
+      description: The 64-character hash shown after signing the registration request.
+      placeholder: 0123456789abcdef…
+    validations:
+      required: true
+  - type: input
+    id: artifact
+    attributes:
+      label: Primary public artifact URL
+      placeholder: https://github.com/owner/project
+    validations:
+      required: true
+  - type: textarea
+    id: signed_request
+    attributes:
+      label: Signed registration request JSON
+      description: Paste the complete JSON copied from Registration Desk. Do not paste your encrypted recovery file.
+      render: json
+    validations:
+      required: true
+  - type: checkboxes
+    id: acknowledgements
+    attributes:
+      label: Applicant acknowledgements
+      options:
+        - label: I understand this issue and every link or field in the request will be public.
+          required: true
+        - label: I did not include a private key, recovery file, password, token, cookie, private log, or unwanted personal information.
+          required: true
+        - label: I understand that a valid DID signature proves key control over exact bytes, not personhood, truth, ownership, endorsement, or reward eligibility.
+          required: true
+        - label: I understand that registration remains pending until a maintainer explicitly approves and deploys it.
+          required: true

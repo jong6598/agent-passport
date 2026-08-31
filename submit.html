@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="referrer" content="no-referrer">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'wasm-unsafe-eval'; style-src 'self'; img-src 'self' data:; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+  <title>Agent Passport · Registration</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="vault.css">
+  <link rel="stylesheet" href="studio.css">
+  <link rel="stylesheet" href="submit.css">
+</head>
+<body>
+  <header class="topbar"><a href="index.html">← Passport</a><span>REGISTRATION DESK</span></header>
+  <main>
+    <section class="hero">
+      <p class="eyebrow">HUMAN-APPROVED PUBLICATION</p>
+      <h1>Apply for a public<br>Agent Passport.</h1>
+      <p>Upload one locally signed contribution, review the exact public profile, and sign the registration request with the same DID. The request is not registered automatically.</p>
+      <div class="status" id="registration-status" role="status" aria-live="polite">Ready. No file has been unlocked, submitted, or published.</div>
+    </section>
+
+    <form id="registration-form" class="studio-layout">
+      <section class="card form-card">
+        <div class="step">01</div><h2>Signed contribution</h2>
+        <p>Use the portable JSON downloaded from Contribution Studio.</p>
+        <label>Signed contribution JSON<input id="signed-contribution-file" type="file" accept=".json,application/json" required></label>
+        <output id="contribution-check" class="inline-check">Not checked yet.</output>
+      </section>
+
+      <section class="card form-card">
+        <div class="step">02</div><h2>Public profile</h2>
+        <label>Display name<input id="display-name-input" type="text" minlength="2" maxlength="80" required></label>
+        <label>Passport type<select id="passport-type" required><option>AGENT</option><option>BUILDER</option><option>RESEARCHER</option><option>CREATOR</option><option>COMMUNITY</option><option>OTHER</option></select></label>
+        <label>Operator region<input id="operator-region-input" type="text" minlength="2" maxlength="64" placeholder="KOREA" required></label>
+        <label>Languages<input id="languages-input" type="text" maxlength="80" placeholder="KO, EN" required></label>
+        <label>Motto (optional)<input id="motto-input" type="text" minlength="2" maxlength="120"></label>
+      </section>
+
+      <section class="card form-card consent-card">
+        <div class="step">03 · PUBLICATION CONSENT</div><h2>Review what becomes public</h2>
+        <label class="check-row"><input id="consent-index" type="checkbox" required><span>List my DID in the public discovery index.</span></label>
+        <label class="check-row"><input id="consent-manifest" type="checkbox" required><span>Publish my profile and signed contribution in a public manifest.</span></label>
+        <label class="check-row"><input id="consent-links" type="checkbox" required><span>Publish the artifact links included in my signed contribution.</span></label>
+        <label class="check-row"><input id="consent-sensitive" type="checkbox" required><span>I checked that the profile, summary, links, and files contain no secrets or unwanted personal information.</span></label>
+      </section>
+
+      <section class="card form-card">
+        <div class="step">04</div><h2>Registration signing key</h2>
+        <p>The recovery file is opened only in this browser. It must match the contribution DID.</p>
+        <label>Encrypted recovery file<input id="registration-key-file" type="file" accept=".agent-passport-key,application/json" required></label>
+      </section>
+
+      <button class="wide-action" id="registration-preview-button" type="submit">Generate registration preview</button>
+    </form>
+
+    <section class="card review" id="registration-preview-panel" hidden>
+      <div class="step">05 · EXACT REGISTRATION PAYLOAD</div><h2>Review before signing</h2>
+      <p>DID</p><code id="registration-preview-did"></code>
+      <p>SHA-256</p><code id="registration-preview-hash"></code>
+      <pre id="registration-preview-json"></pre>
+      <label>Recovery password<input id="registration-password" type="password" minlength="14" autocomplete="current-password" required></label>
+      <button id="registration-sign-button" type="button">Sign registration request locally</button>
+    </section>
+
+    <section class="card success" id="registration-signed-panel" hidden>
+      <div class="step">✓ SIGNATURE VERIFIED · REVIEW PENDING</div><h2>Registration application ready</h2>
+      <p>Request SHA-256</p><code id="registration-signed-hash"></code>
+      <div class="signed-actions registration-actions">
+        <button id="download-registration" type="button">Download request JSON</button>
+        <button class="outline" id="copy-registration" type="button">Copy request JSON</button>
+        <a class="button-link" id="open-registration-issue" target="_blank" rel="noreferrer">Open GitHub application</a>
+      </div>
+      <ol class="handoff-list">
+        <li>Download the request as your portable copy.</li>
+        <li>Copy the request JSON.</li>
+        <li>Open the GitHub application and paste the JSON into the required field.</li>
+      </ol>
+      <p class="boundary">Opening or filing an issue does not register the Passport. A maintainer must validate the signatures, inspect public content, approve the request, update the index, and deploy it.</p>
+    </section>
+  </main>
+  <script src="submit-bundle.js" defer></script>
+</body>
+</html>
